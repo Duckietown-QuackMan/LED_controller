@@ -1,0 +1,22 @@
+<launch>
+    <!-- define arguments for the launch file -->
+    <!-- Pass the vehicle name from the environment variable -->
+    <arg name="vehicle_name" default="$(env VEHICLE_NAME)" />
+
+
+    <!-- Define the paths to the parameter files -->
+    <arg name="topics_param_file_name" default="$(find led_controller)/params/topics.yaml"/>
+    <arg name="colours_param_file_name" default="$(find led_controller)/params/colours.yaml"/>
+    
+    <param name="~bot_type" value="quackman" />
+    <param name="~vehicle_name" value="$(arg vehicle_name)" />
+
+
+    <!-- Launch the exercise node, loading the specified parameter files (.yaml) -->
+    <node name="led_emitter_node" pkg="led_controller" type="led_emitter_node.py" output="screen" required="true">
+        <rosparam command="load" file="$(arg topics_param_file_name)" ns="topics"/>
+        <!-- <rosparam command="load" file="$(arg colours_param_file_name)" ns="colours"/> -->
+        <!-- <rosparam name="bot_type" value="quackman" /> -->
+    </node>
+    
+</launch>

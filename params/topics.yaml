@@ -1,0 +1,9 @@
+pub: # Published topics
+  led_pattern: /edward/led_emitter_node/led_pattern # TODO: Make this get the vehicle name in the script
+
+
+sub: # Subscribed topics
+  score_update: /quack_man/score_update
+
+
+
