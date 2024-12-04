@@ -10,6 +10,8 @@
     
     <param name="~bot_type" value="quackman" />
     <param name="~vehicle_name" value="$(arg vehicle_name)" />
+    <param name="~colours_param_file_name" value="$(arg colours_param_file_name)" />
+
 
 
     <!-- Launch the exercise node, loading the specified parameter files (.yaml) -->

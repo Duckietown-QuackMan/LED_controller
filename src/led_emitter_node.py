@@ -51,12 +51,28 @@ class LEDController:
 
         self.vehicle_name = get_rosparam("~vehicle_name")
         
-        # self.frequency = get_rosparam("colours/frequency")
-        # self.intensity = get_rosparam("colours/intensity")
+        self.frequency = get_rosparam("~colours/frequency")
+        self.intensity = get_rosparam("~colours/intensity")
 
-        # # Load colors from 'colours/COLORS' namespace
-        # colours = rospy.get_param("colours/colours")
+        # Load colors from 'colours/COLORS' namespace
+        # colours = rospy.get_param("~colours/colours")
         # self.colour_objects = {name: ColorRGBA(**values) for name, values in colours.items()}
+        # Load colors from 'colours' namespace
+        # colours = get_rosparam("~colours")
+        # self.colour_objects = {name: ColorRGBA(**values) for name, values in colours.items()}
+
+        # Load the colours.yaml file manually
+        colours_yaml_path = get_rosparam("~colours_param_file_name")
+        rospy.loginfo(f"Loading colours from {colours_yaml_path}")
+        with open(colours_yaml_path, 'r') as file:
+            colours = yaml.safe_load(file)["colours"]
+
+        # Convert colors to ColorRGBA objects
+        self.colour_objects = {name: ColorRGBA(**values) for name, values in colours.items()}
+        rospy.loginfo(f"Loaded colours: {self.colour_objects}")
+
+        # Debugging: Log the loaded colors
+        rospy.loginfo(f"Loaded colors: {self.colour_objects}")
 
         self.score = None
         # # tag info
@@ -117,10 +133,13 @@ class LEDController:
         for i, bit in enumerate(binary_with_zero):
             print(i, bit)
             if bit == '1':
-                led_msg.rgb_vals.append(ColorRGBA(1.0, 1.0, 1.0, 1.0))  # ON (White)
+                led_msg.rgb_vals.append(self.colour_objects['COLOUR_WHITE'])  # ON (White)
+
+                
+                # led_msg.rgb_vals.append(ColorRGBA(1.0, 1.0, 1.0, 1.0))  # ON (White)
                 led_msg.color_mask.append(1)
             else:
-                led_msg.rgb_vals.append(ColorRGBA(0.0, 0.0, 0.0, 1.0))  # OFF
+                led_msg.rgb_vals.append(self.colour_objects['COLOUR_WHITE'])  # OFF
                 led_msg.color_mask.append(0)
 
         led_msg.frequency = 0.0  # No blinking
@@ -128,7 +147,7 @@ class LEDController:
 
         # Publish LED pattern
         self.pub_led_pattern.publish(led_msg)
-        rospy.loginfo("LED pattern published.")
+        rospy.loginfo("SCORE-LED published.")
         #
         
     
@@ -162,7 +181,3 @@ if __name__ == "__main__":
 #         )
 #         time.sleep(dt)
 #         bit = 1 - bit
-
-
-if __name__ == '__main__':
-    blinker()

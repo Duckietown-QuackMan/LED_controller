@@ -4,6 +4,9 @@ pub: # Published topics
 
 sub: # Subscribed topics
   score_update: /quack_man/score_update
+  all_checkpoints_collected: /quack_man/all_checkpoints_collected
+
+
 
 
 
