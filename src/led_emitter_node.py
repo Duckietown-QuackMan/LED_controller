@@ -87,6 +87,8 @@ class LEDController:
         # topics params
         self.name_sub_all_checkpoints_collected = get_rosparam("~topics/sub/all_checkpoints_collected")
         self.name_sub_score_update = get_rosparam("~topics/sub/score_update")
+        self.name_sub_checkpoint_timeout = get_rosparam("~topics/sub/checkpoint_timeout")
+        self.name_pub_quackman_found = get_rosparam("~topics/pub/quack_man")
 
         self.name_pub_led_pattern = self.vehicle_name + get_rosparam("~topics/pub/led_pattern")
 
@@ -108,6 +110,14 @@ class LEDController:
                                           Bool, 
                                           self.cb_all_cp_collected, 
                                           queue_size=10)
+        self.sub_checkpoint_timeout = rospy.Subscriber(self.name_sub_checkpoint_timeout,
+                                            Bool,
+                                            self.cb_cp_timeout,
+                                            queue_size=10)
+        self.sub_quackman_found = rospy.Subscriber(self.name_pub_quackman_found,
+                                            Bool,
+                                            self.cb_quackman_found,
+                                            queue_size=10)
 
         self.pub_led_pattern = rospy.Publisher(self.name_pub_led_pattern, 
                                              LEDPattern, 
@@ -167,6 +177,37 @@ class LEDController:
         # Publish LED pattern
         self.pub_led_pattern.publish(led_msg)
         rospy.loginfo("ALL_CP_COLLECTED-LED published.")
+    
+    def cb_cp_timeout(self, msg):
+        # Create LED pattern
+        led_msg = LEDPattern()
+        led_msg.rgb_vals = []
+        led_msg.color_mask = []
+        for i in range(5):
+            led_msg.rgb_vals.append(self.colour_objects['COLOUR_RED'])  
+            led_msg.color_mask.append(1)
+        led_msg.frequency = 0.0  # No blinking
+        led_msg.frequency_mask = [0, 0, 0, 0]  # No LEDs blink
+
+        # Publish LED pattern
+        self.pub_led_pattern.publish(led_msg)
+        rospy.loginfo("CP_TIMEOUT-LED published.")
+
+    def cb_quackman_found(self, msg):
+        # Create LED pattern
+        led_msg = LEDPattern()
+        led_msg.rgb_vals = []
+        led_msg.color_mask = []
+        for i in range(5):
+            led_msg.rgb_vals.append(self.colour_objects['COLOUR_RED'])  
+            led_msg.color_mask.append(1)
+        led_msg.frequency = 0.0  # No blinking
+        led_msg.frequency_mask = [0, 0, 0, 0]  # No LEDs blink
+
+        # Publish LED pattern
+        self.pub_led_pattern.publish(led_msg)
+        rospy.loginfo("QM_found-LED published.")
+
 
     def led_pattern_on_start(self):
         # Create LED pattern
