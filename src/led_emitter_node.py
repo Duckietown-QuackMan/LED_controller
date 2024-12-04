@@ -68,7 +68,7 @@ class LEDController:
        
 
         # topics params
-        self.name_pub_led_pattern = get_rosparam("~topics/pub/led_pattern")
+        self.name_pub_led_pattern = self.vehicle_name + get_rosparam("~topics/pub/led_pattern")
         self.name_sub_score_update = get_rosparam("~topics/sub/score_update")
         rospy.loginfo(f"Resolved topics name loading")
 

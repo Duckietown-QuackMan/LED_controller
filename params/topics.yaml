@@ -1,5 +1,5 @@
 pub: # Published topics
-  led_pattern: /edward/led_emitter_node/led_pattern # TODO: Make this get the vehicle name in the script
+  led_pattern: /led_emitter_node/led_pattern # vehicle name set ducring runtime in init
 
 
 sub: # Subscribed topics
