@@ -6,7 +6,7 @@ from typing import List
 import yaml
 import rospy
 from duckietown_msgs.msg import LEDPattern
-from std_msgs.msg import ColorRGBA, Int32
+from std_msgs.msg import ColorRGBA, Int32, Bool
 
 
 
@@ -21,6 +21,8 @@ class LEDController:
 
         self.setup_params()
         self.setup_publishers_and_subscribers()
+        self._led_pattern_on_start()
+
 
 
 
@@ -84,8 +86,12 @@ class LEDController:
        
 
         # topics params
-        self.name_pub_led_pattern = self.vehicle_name + get_rosparam("~topics/pub/led_pattern")
+        self.name_sub_all_checkpoints_collected = get_rosparam("~topics/sub/all_checkpoints_collected")
         self.name_sub_score_update = get_rosparam("~topics/sub/score_update")
+
+        self.name_pub_led_pattern = self.vehicle_name + get_rosparam("~topics/pub/led_pattern")
+
+
         rospy.loginfo(f"Resolved topics name loading")
 
 
@@ -99,17 +105,22 @@ class LEDController:
                                           Int32, 
                                           self.cb_score_update, 
                                           queue_size=10)
+        self.sub_all_checkpoints_collected = rospy.Subscriber(self.name_sub_all_checkpoints_collected,       
+                                          Bool, 
+                                          self.cb_all_cp_collected, 
+                                          queue_size=10)
 
         self.pub_led_pattern = rospy.Publisher(self.name_pub_led_pattern, 
                                              LEDPattern, 
                                              queue_size=10)
+        
 
 
     def cb_score_update(self, msg):
         rospy.loginfo(f"score: {msg.data}")
         # Ensure score is within range
         self.score = msg.data
-        if self.score < 0 or self.score > 15:
+        if self.score <= 0 or self.score > 15:
             rospy.logwarn("Score out of range (0-15). Ignoring.")
             return
         
@@ -125,21 +136,14 @@ class LEDController:
         led_msg = LEDPattern()
         led_msg.rgb_vals = []
         led_msg.color_mask = []
-        # for i, bit in enumerate(binary):
-        #     print(i, bit)
-        #     if i == 2:
-        #         led_msg.rgb_vals.append(ColorRGBA(0.0, 0.0, 0.0, 1.0))  # OFF
-        #         led_msg.color_mask.append(0)
         for i, bit in enumerate(binary_with_zero):
             print(i, bit)
             if bit == '1':
-                led_msg.rgb_vals.append(self.colour_objects['COLOUR_WHITE'])  # ON (White)
-
-                
-                # led_msg.rgb_vals.append(ColorRGBA(1.0, 1.0, 1.0, 1.0))  # ON (White)
+                # led_msg.rgb_vals.append(self.colour_objects['COLOUR_WHITE'])  # ON (White)
+                led_msg.rgb_vals.append(ColorRGBA(1.0, 1.0, 1.0, 1.0))  # ON (White)
                 led_msg.color_mask.append(1)
             else:
-                led_msg.rgb_vals.append(self.colour_objects['COLOUR_WHITE'])  # OFF
+                led_msg.rgb_vals.append(self.colour_objects['COLOUR_OFF'])  # OFF
                 led_msg.color_mask.append(0)
 
         led_msg.frequency = 0.0  # No blinking
@@ -148,9 +152,41 @@ class LEDController:
         # Publish LED pattern
         self.pub_led_pattern.publish(led_msg)
         rospy.loginfo("SCORE-LED published.")
-        #
+
+
+    def cb_all_cp_collected(self, msg):
+        # Create LED pattern
+        led_msg = LEDPattern()
+        led_msg.rgb_vals = []
+        led_msg.color_mask = []
+        for i in range(5):
+            led_msg.rgb_vals.append(self.colour_objects['COLOUR_GREEN'])  
+            led_msg.color_mask.append(1)
+        led_msg.frequency = 0.0  # No blinking
+        led_msg.frequency_mask = [0, 0, 0, 0]  # No LEDs blink
+
+        # Publish LED pattern
+        self.pub_led_pattern.publish(led_msg)
+        rospy.loginfo("ALL_CP_COLLECTED-LED published.")
+
+    def _led_pattern_on_start(self):
+        # Create LED pattern
+        led_msg = LEDPattern()
+        led_msg.rgb_vals = []
+        led_msg.color_mask = []
+        for i in range(5):
+            led_msg.rgb_vals.append(self.colour_objects['COLOUR_BLUE'])  
+            led_msg.color_mask.append(1)
+        led_msg.frequency = 0.0  # No blinking
+        led_msg.frequency_mask = [0, 0, 0, 0]  # No LEDs blink
+        rospy.loginfo(led_msg)
+
+        # Publish LED pattern
+        self.pub_led_pattern.publish(led_msg)
+        rospy.loginfo("WAITING FOR FIRST CP-LED published.")
+        pass
         
-    
+
 if __name__ == "__main__":
     LEDController()
     rospy.spin()
