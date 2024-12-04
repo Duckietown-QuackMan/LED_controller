@@ -21,7 +21,6 @@ class LEDController:
 
         self.setup_params()
         self.setup_publishers_and_subscribers()
-        self._led_pattern_on_start()
 
 
 
@@ -121,7 +120,7 @@ class LEDController:
         # Ensure score is within range
         self.score = msg.data
         if self.score <= 0 or self.score > 15:
-            rospy.logwarn("Score out of range (0-15). Ignoring.")
+            rospy.logwarn("Score out of range (1-15). Ignoring.")
             return
         
         # Convert score to binary and map to LED states
@@ -169,7 +168,7 @@ class LEDController:
         self.pub_led_pattern.publish(led_msg)
         rospy.loginfo("ALL_CP_COLLECTED-LED published.")
 
-    def _led_pattern_on_start(self):
+    def led_pattern_on_start(self):
         # Create LED pattern
         led_msg = LEDPattern()
         led_msg.rgb_vals = []
@@ -189,7 +188,9 @@ class LEDController:
 
 if __name__ == "__main__":
     LEDController()
+    
     rospy.spin()
+
 
 
 # def blinker():
