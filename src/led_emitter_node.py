@@ -21,6 +21,7 @@ class LEDController:
 
         self.setup_params()
         self.setup_publishers_and_subscribers()
+        self.led_pattern_on_start()
 
 
 
@@ -52,8 +53,8 @@ class LEDController:
 
         self.vehicle_name = get_rosparam("~vehicle_name")
         
-        self.frequency = get_rosparam("~colours/frequency")
-        self.intensity = get_rosparam("~colours/intensity")
+        # self.frequency = get_rosparam("~colours/frequency")
+        # self.intensity = get_rosparam("~colours/intensity")
 
         # Load colors from 'colours/COLORS' namespace
         # colours = rospy.get_param("~colours/colours")
@@ -88,7 +89,7 @@ class LEDController:
         self.name_sub_all_checkpoints_collected = get_rosparam("~topics/sub/all_checkpoints_collected")
         self.name_sub_score_update = get_rosparam("~topics/sub/score_update")
         self.name_sub_checkpoint_timeout = get_rosparam("~topics/sub/checkpoint_timeout")
-        self.name_pub_quackman_found = get_rosparam("~topics/pub/quack_man")
+        self.name_pub_quackman_found = get_rosparam("~topics/sub/quack_man")
 
         self.name_pub_led_pattern = self.vehicle_name + get_rosparam("~topics/pub/led_pattern")
 
@@ -164,6 +165,9 @@ class LEDController:
 
 
     def cb_all_cp_collected(self, msg):
+        if msg.data == False:
+            rospy.loginfo("All checkpoints not collected. Ignoring.")
+            return
         # Create LED pattern
         led_msg = LEDPattern()
         led_msg.rgb_vals = []
@@ -179,6 +183,9 @@ class LEDController:
         rospy.loginfo("ALL_CP_COLLECTED-LED published.")
     
     def cb_cp_timeout(self, msg):
+        if msg.data == False:
+            rospy.loginfo("All checkpoints not collected. Ignoring.")
+            return
         # Create LED pattern
         led_msg = LEDPattern()
         led_msg.rgb_vals = []
@@ -194,6 +201,9 @@ class LEDController:
         rospy.loginfo("CP_TIMEOUT-LED published.")
 
     def cb_quackman_found(self, msg):
+        if msg.data == False:
+            rospy.loginfo("All checkpoints not collected. Ignoring.")
+            return
         # Create LED pattern
         led_msg = LEDPattern()
         led_msg.rgb_vals = []
