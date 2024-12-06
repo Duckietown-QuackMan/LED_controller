@@ -9,6 +9,7 @@ colours:
   COLOUR_GREEN: {r: 0.0, g: 1.0, b: 0.0, a: 0.25}
   COLOUR_BLUE: {r: 0.0, g: 0.0, b: 1.0, a: 0.25}
   COLOUR_WHITE: {r: 1.0, g: 1.0, b: 1.0, a: 0.75}
+  COLOUR_YELLOW: {r: 1.0, g: 1.0, b: 0.0, a: 0.25}
   # COLOR_OFF:
   #   - r: 0.0
   #   - g: 0.0

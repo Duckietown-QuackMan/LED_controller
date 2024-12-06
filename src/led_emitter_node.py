@@ -96,14 +96,15 @@ class LEDController:
                                             Bool,
                                             self.cb_quackman_found,
                                             queue_size=10)
-
-        self.pub_led_pattern = rospy.Publisher(self.name_pub_led_pattern, 
-                                             LEDPattern, 
-                                             queue_size=10)
         self.sub_game_State = rospy.Subscriber(self.name_sub_game_state,
                                             String,
                                             self.cb_game_state,
                                             queue_size=10)
+
+        self.pub_led_pattern = rospy.Publisher(self.name_pub_led_pattern, 
+                                             LEDPattern, 
+                                             queue_size=10)
+        
         
 
 
@@ -168,12 +169,18 @@ class LEDController:
     def cb_game_state(self, msg):
         print(msg.data, self.game_running)
         if msg.data == "IDLE":
+            print("colour to be set is blue")
             # indicate game is idle, waiting for all bots to connect
             self.set_led_pattern("COLOUR_BLUE")
         elif msg.data == "RUNNING" and not self.game_running:
             # indicates game has started, but no checkpoints detected yet
             self.game_running = True
-            self.set_led_pattern("COLOUR_OFF")
+            self.set_led_pattern("COLOUR_YELLOW")
+        elif msg.data == "GAME_OVER":
+            # indicates game is over
+            self.set_led_pattern("COLOUR_RED")
+            rospy.loginfo("LED_pattern-game over from Game master set.")
+
 
     def set_led_pattern(self, colour_name: str):
         # Create LED pattern
@@ -185,7 +192,7 @@ class LEDController:
             led_msg.color_mask.append(1)
         led_msg.frequency = 0.0  # No blinking
         led_msg.frequency_mask = [0, 0, 0, 0]  # No LEDs blink
-        rospy.loginfo(led_msg)
+        # rospy.loginfo(led_msg)
 
         # Publish LED pattern
         self.pub_led_pattern.publish(led_msg)
