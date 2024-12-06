@@ -7,6 +7,8 @@ sub: # Subscribed topics
   all_checkpoints_collected: /quack_man/all_checkpoints_collected
   checkpoint_timeout: /quack_man/checkpoint_timeout
   quack_man: /quack_man/quack_man
+  game_state: /quack_man/game_state
+
 
 
 
