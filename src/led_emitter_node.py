@@ -83,27 +83,27 @@ class LEDController:
         self.sub_score_update = rospy.Subscriber(self.name_sub_score_update,       
                                           Int32, 
                                           self.cb_score_update, 
-                                          queue_size=10)
+                                          queue_size=1)
         self.sub_all_checkpoints_collected = rospy.Subscriber(self.name_sub_all_checkpoints_collected,       
                                           Bool, 
                                           self.cb_all_cp_collected, 
-                                          queue_size=10)
+                                          queue_size=1)
         self.sub_checkpoint_timeout = rospy.Subscriber(self.name_sub_checkpoint_timeout,
                                             Bool,
                                             self.cb_cp_timeout,
-                                            queue_size=10)
+                                            queue_size=1)
         self.sub_quackman_found = rospy.Subscriber(self.name_pub_quackman_found,
                                             Bool,
                                             self.cb_quackman_found,
-                                            queue_size=10)
+                                            queue_size=1)
         self.sub_game_State = rospy.Subscriber(self.name_sub_game_state,
                                             String,
                                             self.cb_game_state,
-                                            queue_size=10)
+                                            queue_size=1)
 
         self.pub_led_pattern = rospy.Publisher(self.name_pub_led_pattern, 
                                              LEDPattern, 
-                                             queue_size=10)
+                                             queue_size=1)
         
         
 
