@@ -173,7 +173,8 @@ class LEDController:
             # indicate game is idle, waiting for all bots to connect
             self.set_led_pattern("COLOUR_BLUE")
         elif msg.data == "RUNNING" and not self.game_running:
-            # indicates game has started, but no checkpoints detected yet
+            # indicates game has started,
+            # FOR QUACKMAN: but no checkpoints detected yet
             self.game_running = True
             self.set_led_pattern("COLOUR_YELLOW")
         elif msg.data == "GAME_OVER":
@@ -183,7 +184,6 @@ class LEDController:
 
 
     def set_led_pattern(self, colour_name: str):
-        # Create LED pattern
         led_msg = LEDPattern()
         led_msg.rgb_vals = []
         led_msg.color_mask = []
